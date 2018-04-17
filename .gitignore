@@ -45,8 +45,9 @@ packages.config
 
 #Xcode Files
 Makefile
-Project.xcconfig
-config.make
-flappy-bird.xcodeproj/*
-openFrameworks-Info.plist
+flappy-bird/Project.xcconfig
+flappy-bird/config.make
+flappy-bird/flappy-bird.xcodeproj/*
+flappy-bird/openFrameworks-Info.plist
+flappy-bird/addons.make
 
