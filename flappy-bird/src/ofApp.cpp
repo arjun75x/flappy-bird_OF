@@ -5,21 +5,21 @@ void ofApp::setup(){
     srand(static_cast<unsigned>(time(0))); // Seed random with current time
     ofSetWindowShape(1000, 1000);
     ofSetWindowPosition(0, 0);
-}
+};
 
 void ofApp::update(){
     if (should_update_) {
         if (current_state_ == IN_PROGRESS) {
-            pipe_.setX(pipe_.getX() - 1);
-            bird_.setY(bird_.getY() + 1);
-            if (bird_.intersects(pipe_)) {
-                current_state_ == FINISHED;
+            pipe_.body.setX(pipe_.body.getX() - 1);
+            bird_.body.setY(bird_.body.getY() + 1);
+            if (Intersect(pipe_.body, bird_.body)) {
+                current_state_ = FINISHED;
             }
         }
     }
     
     should_update_ = true;
-}
+};
 
 void ofApp::draw(){
     if(current_state_ == PAUSED) {
@@ -30,7 +30,7 @@ void ofApp::draw(){
     }
     DrawBird();
     DrawPipe();
-}
+};
 
 void ofApp::keyPressed(int key){
     if (key == OF_KEY_F12) {
@@ -44,7 +44,7 @@ void ofApp::keyPressed(int key){
     }
     else if (current_state_ == IN_PROGRESS) {
         if (upper_key == 'B') {
-            bird_.setY(bird_.getY() - 15);
+            bird_.body.setY(bird_.body.getY() - 15);
             DrawBird();
             update();
             should_update_ = false;
@@ -53,7 +53,7 @@ void ofApp::keyPressed(int key){
     else if (upper_key == 'R' && current_state_ == FINISHED) {
         Reset();
     }
-}
+};
 
 void ofApp::UpdateTopScores(int score) {
     for (int i = 0; i < top_scores_.size(); i++) {
@@ -67,11 +67,11 @@ void ofApp::UpdateTopScores(int score) {
 };
 
 void ofApp::DrawBird() {
-    ofDrawRectangle(bird_);
+    ofDrawRectangle(bird_.body);
 };
 
 void ofApp::DrawPipe() {
-    ofDrawRectangle(pipe_);
+    ofDrawRectangle(pipe_.body);
 };
 
 void ofApp::DrawGameOver() {
@@ -91,4 +91,9 @@ void ofApp::Reset() {
     current_state_ = IN_PROGRESS;
     bird_ = ofRectangle(0,1000,20,20);
     pipe_ = ofRectangle(1000,0,50,500);
+};
+
+bool ofApp::Intersect(ofRectangle one, ofRectangle two) {
+    return ((two.getY() >= one.getMinY() && two.getY() <= one.getMaxY()) &&
+            (two.getX() >= one.getMinX() && two.getX() <= one.getMaxX()));
 };

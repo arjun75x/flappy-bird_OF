@@ -51,3 +51,4 @@ flappy-bird/flappy-bird.xcodeproj/*
 flappy-bird/openFrameworks-Info.plist
 flappy-bird/addons.make
 
+*.DS_Store
