@@ -3,17 +3,21 @@
 void ofApp::setup(){
     ofSetWindowTitle("Flappy Bird");
     srand(static_cast<unsigned>(time(0))); // Seed random with current time
-    ofSetWindowShape(1000, 1000);
+    ofSetWindowShape(500, 500);
     ofSetWindowPosition(0, 0);
 };
 
 void ofApp::update(){
     if (should_update_) {
         if (current_state_ == IN_PROGRESS) {
-            pipe_.body.setX(pipe_.body.getX() - 1);
+            pipe_one_.body.setX(pipe_one_.body.getX() - (score_ + 1));
+            pipe_two_.body.setX(pipe_one_.body.getX() - (score_ + 1));
             bird_.body.setY(bird_.body.getY() + 1);
-            if (Intersect(pipe_.body, bird_.body)) {
+            if (Intersect(bird_, pipe_one_) || Intersect(bird_, pipe_two_)) {
                 current_state_ = FINISHED;
+            }
+            if (OutOfBounds()) {
+                GeneratePipes();
             }
         }
     }
@@ -29,7 +33,7 @@ void ofApp::draw(){
         DrawGameOver();
     }
     DrawBird();
-    DrawPipe();
+    DrawPipes();
 };
 
 void ofApp::keyPressed(int key){
@@ -70,8 +74,9 @@ void ofApp::DrawBird() {
     ofDrawRectangle(bird_.body);
 };
 
-void ofApp::DrawPipe() {
-    ofDrawRectangle(pipe_.body);
+void ofApp::DrawPipes() {
+    ofDrawRectangle(pipe_one_.body);
+    ofDrawRectangle(pipe_two_.body);
 };
 
 void ofApp::DrawGameOver() {
@@ -88,12 +93,23 @@ void ofApp::DrawGamePaused() {
 };
 
 void ofApp::Reset() {
+    score_ = 0;
     current_state_ = IN_PROGRESS;
-    bird_ = ofRectangle(0,1000,20,20);
-    pipe_ = ofRectangle(1000,0,50,500);
+    bird_ = Bird(ofRectangle(50,200,20,20));
+    GeneratePipes();
 };
 
-bool ofApp::Intersect(ofRectangle one, ofRectangle two) {
-    return ((two.getY() >= one.getMinY() && two.getY() <= one.getMaxY()) &&
-            (two.getX() >= one.getMinX() && two.getX() <= one.getMaxX()));
+bool ofApp::Intersect(Bird bird, Pipe pipe) {
+    return bird.body.intersects(pipe.body);
 };
+
+bool ofApp::OutOfBounds() {
+    return pipe_one_.body.getMinX() < 0;
+};
+
+void ofApp::GeneratePipes() {
+    score_++;
+    int random = ofRandom(0, 500);
+    pipe_one_ = Pipe(ofRectangle(500,0,50,random));
+    pipe_two_ = Pipe(ofRectangle(500,500 - random + 100,50,500 - random));
+}

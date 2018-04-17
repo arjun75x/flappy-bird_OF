@@ -15,11 +15,6 @@ class Pipe {
 public:
     ofRectangle body;
     Pipe(ofRectangle v) : body(v) {};
-    
-    /**
-     Method to regenerate pipes each time
-     */
-    void GeneratePipes();
 };
 
 #endif /* pipe_hpp */

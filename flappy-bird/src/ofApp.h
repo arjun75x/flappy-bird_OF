@@ -17,10 +17,11 @@ private:
     GameState current_state_ = IN_PROGRESS;
     
     //actual bird
-    Bird bird_ = Bird(ofRectangle(50,500,20,20));
+    Bird bird_ = Bird(ofRectangle(50,200,20,20));
     
     //pipe the bird has to jump through, still needs to be implemented
-    Pipe pipe_ = Pipe(ofRectangle(1000,0,50,500));
+    Pipe pipe_one_ = Pipe(ofRectangle(500,0,50,200));
+    Pipe pipe_two_ = Pipe(ofRectangle(500,280,50,300));
 
     //Vector for top 10 scores
     std::vector<unsigned> top_scores_ = vector<unsigned>(10);
@@ -46,7 +47,7 @@ private:
     /**
      Function to render pipe on screen
      */
-    void DrawPipe();
+    void DrawPipes();
     
     /**
      Function to render game over screen
@@ -64,9 +65,19 @@ private:
     void Reset();
     
     /**
-     Function to check if two rectangles intersect
+     Function to check if a bird and pipe intersect
      */
-    bool Intersect(ofRectangle one, ofRectangle two);
+    bool Intersect(Bird, Pipe);
+    
+    /**
+     Function to check if pipe is out of bounds
+     */
+    bool OutOfBounds();
+    
+    /**
+     Method to regenerate pipes each time
+     */
+    void GeneratePipes();
     
 public:
     void setup();

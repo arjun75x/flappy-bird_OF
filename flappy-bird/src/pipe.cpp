@@ -6,7 +6,3 @@
 //
 
 #include "pipe.hpp"
-
-void Pipe::GeneratePipes() {
-    
-};
