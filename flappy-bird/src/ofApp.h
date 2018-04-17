@@ -11,17 +11,20 @@ enum GameState {
 
 class ofApp : public ofBaseApp{
 private:
-     // Current state of game
+     //Current state of game
     GameState current_state_ = IN_PROGRESS;
     
     //actual bird, still needs to be implemented
-    //Bird bird_;
+    ofRectangle bird_ = ofRectangle(50,500,20,20);
     
     //pipe the bird has to jump through, still needs to be implemented
-    //Pipe pipe_;
+    ofRectangle pipe_ = ofRectangle(1000,0,50,500);
 
     //Vector for top 10 scores
-    std::vector<unsigned> top_scores_ = vector<unsigned>(10); //vector for top scores
+    std::vector<unsigned> top_scores_ = vector<unsigned>(10);
+    
+    //Current score
+    unsigned score_ = 0;
     
     /**
      Function to update top score vector
@@ -63,15 +66,4 @@ public:
     void update();
     void draw();
     void keyPressed(int key);
-    void keyReleased(int key);
-    void mouseMoved(int x, int y );
-    void mouseDragged(int x, int y, int button);
-    void mousePressed(int x, int y, int button);
-    void mouseReleased(int x, int y, int button);
-    void mouseEntered(int x, int y);
-    void mouseExited(int x, int y);
-    void windowResized(int w, int h);
-    void dragEvent(ofDragInfo dragInfo);
-    void gotMessage(ofMessage msg);
-		
 };
