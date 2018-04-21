@@ -1,43 +1,55 @@
 #include "ofApp.h"
+const unsigned kWidth = 288;
+const unsigned kHeight = 512;
 
 void ofApp::setup(){
     ofSetWindowTitle("Flappy Bird");
     srand(static_cast<unsigned>(time(0))); // Seed random with current time
-    ofSetWindowShape(500, 500);
-    ofSetWindowPosition(0, 0);
-};
-
+    ofSetWindowShape(kWidth, kHeight);
+    background_image_.load("graphics/background.png");
+    bird_falling_image_.load("graphics/bird_falling.png");
+    bird_jumping_image_.load("graphics.bird_jumping.png");
+    pipe_down_image_.load("graphics/pipe_down.png");
+    pipe_up_image_.load("graphics/pipe_up.png");
+    start_button_image_.load("graphics/start.png");
+    name_image_.load("graphics/name.png");
+}
 
 void ofApp::update(){
-    if (should_update_) {
-        if (current_state_ == IN_PROGRESS) {
-            pipe_one_.body.setX(pipe_one_.body.getX() - SpeedCalculator(score_));
-            pipe_two_.body.setX(pipe_one_.body.getX() - SpeedCalculator(score_));
-            bird_.body.setY(bird_.body.getY() + 2);
-            if (Intersect(bird_, pipe_one_) || Intersect(bird_, pipe_two_)) {
-                UpdateTopScores(score_);
-                current_state_ = FINISHED;
-            }
-            if (OutOfBounds()) {
-                GeneratePipes();
-            }
+    if (current_state_ == FALLING) {
+        MovePipes();
+        bird_.body.setY(bird_.body.getY() + 2);
+        if (Intersect(bird_, top_pipe_) || Intersect(bird_, bottom_pipe_)) {
+            UpdateTopScores(score_);
+            current_state_ = FINISHED;
         }
+        if (OutOfBounds()) {
+            GeneratePipes();
+        }
+    } else if (current_state_ == JUMP) {
+        bird_.body.setY(bird_.body.getY() - 25);
+        MovePipes();
+        current_state_ = FALLING;
     }
-    
-    should_update_ = true;
-};
+}
 
+//add score to top right corner
 void ofApp::draw(){
-    if(current_state_ == PAUSED) {
+    background_image_.draw(0, 0, kWidth, kHeight);
+    if (current_state_ == START) {
+        DrawStart();
+    } else if (current_state_ == PAUSED) {
         DrawGamePaused();
-    }
-    else if(current_state_ == FINISHED) {
-        DrawTopScores();
+    } else if (current_state_ == JUMP) {
+        bird_jumping_image_.draw(bird_.body);
+        DrawPipes();
+    } else if (current_state_ == FALLING) {
+        DrawBird();
+        DrawPipes();
+    } else if (current_state_ == FINISHED) {
         DrawGameOver();
     }
-    DrawBird();
-    DrawPipes();
-};
+}
 
 void ofApp::keyPressed(int key){
     if (key == OF_KEY_F12) {
@@ -47,62 +59,75 @@ void ofApp::keyPressed(int key){
     int upper_key = toupper(key);
     
     if (upper_key == 'P' && current_state_ != FINISHED) {
-        current_state_ = (current_state_ == IN_PROGRESS) ? PAUSED : IN_PROGRESS;
-    }
-    else if (current_state_ == IN_PROGRESS) {
+        current_state_ = (current_state_ == FALLING) ? PAUSED : FALLING;
+    } else if (current_state_ == FALLING) {
         if (upper_key == 'B') {
-            bird_.body.setY(bird_.body.getY() - 25);
-            DrawBird();
+            current_state_ = JUMP;
         }
-    }
-    else if (upper_key == 'R' && current_state_ == FINISHED) {
+    } else if (current_state_ == START) {
+        if (upper_key == 'V') {
+            current_state_ = FALLING;
+        }
+    } else if (upper_key == 'R' && current_state_ == FINISHED) {
         Reset();
     }
-};
+}
 
 void ofApp::DrawBird() {
-    ofDrawRectangle(bird_.body);
-};
+    bird_falling_image_.draw(bird_.body);
+}
 
 void ofApp::DrawPipes() {
-    ofDrawRectangle(pipe_one_.body);
-    ofDrawRectangle(pipe_two_.body);
-};
+    pipe_down_image_.draw(top_pipe_.body);
+    pipe_up_image_.draw(bottom_pipe_.body);
+}
 
 void ofApp::DrawGameOver() {
-    string score_string = std::to_string(score_);
-    string lose_message = "You Lost! Final Score: " + score_string;
-    ofSetColor(0, 0, 0);
-    ofDrawBitmapString(lose_message, ofGetWindowWidth() / 2, ofGetWindowHeight() / 2 - 200);
-};
+    string score_string = std::to_string(score_ - 1);
+    string message = "You Lost! Final Score: " + score_string;
+    
+    stringstream out;
+    out << endl;
+    out << "Top Scores: " << endl;
+    for (int i = 0 ; i < top_scores_.size(); i++) {
+        out << i + 1 << ". " << top_scores_[i] << endl;
+    }
+    message += out.str();
+    ofDrawBitmapString(message, kWidth/2 - 80, kHeight/2);
+}
+
+void ofApp::DrawStart() {
+    name_image_.draw(kWidth/2 - name_image_.getWidth()/2, kHeight/2 - 50);
+    start_button_image_.draw(kWidth/2 - start_button_image_.getWidth()/2, kHeight/2 + 50);
+}
 
 void ofApp::DrawGamePaused() {
     string pause_message = "P to Unpause!";
     ofSetColor(0, 0, 0);
     ofDrawBitmapString(pause_message, ofGetWindowWidth() / 2, ofGetWindowHeight() / 2);
-};
+}
 
 void ofApp::Reset() {
     score_ = 0;
-    current_state_ = IN_PROGRESS;
+    current_state_ = FALLING;
     bird_ = Bird(ofRectangle(50,200,20,20));
     GeneratePipes();
-};
+}
 
 bool ofApp::Intersect(Bird bird, Pipe pipe) {
     return bird.body.intersects(pipe.body);
-};
+}
 
 bool ofApp::OutOfBounds() {
-    return pipe_one_.body.getMinX() < 0;
-};
+    return top_pipe_.body.getMinX() < 0;
+}
 
 void ofApp::GeneratePipes() {
     score_++;
     int random = ofRandom(100, 250);
-    pipe_one_ = Pipe(ofRectangle(500,0,50,random));
-    pipe_two_ = Pipe(ofRectangle(500,500 - random + 40,50,500 - random));
-};
+    top_pipe_ = Pipe(ofRectangle(kWidth,0,50,random));
+    bottom_pipe_ = Pipe(ofRectangle(kWidth,kHeight - random + 50,50,kHeight - random));
+}
 
 double ofApp::SpeedCalculator(double score_) {
     if (score_ == 0) {
@@ -110,13 +135,13 @@ double ofApp::SpeedCalculator(double score_) {
     } else if (score_ == 1) {
         return 1.0;
     } else if (score_ > 7){
-        return SpeedCalculator(6) + SpeedCalculator(5) * .7;
+        return SpeedCalculator(6) + SpeedCalculator(5) * .6;
     } else {
-        return SpeedCalculator(score_ - 2) + SpeedCalculator(score_ - 1) * .7;
+        return SpeedCalculator(score_ - 2) + SpeedCalculator(score_ - 1) * .6;
     }
-};
+}
 
-void ofApp::UpdateTopScores(int score) {
+void ofApp::UpdateTopScores(unsigned score) {
     for (int i = 0; i < top_scores_.size(); i++) {
         if (score > top_scores_[i]) {
             int temp = top_scores_[i];
@@ -125,15 +150,9 @@ void ofApp::UpdateTopScores(int score) {
             break;
         }
     }
-};
+}
 
-void ofApp::DrawTopScores() {
-    stringstream out;
-    out << "Top Scores: " << endl;
-    for (int i = 0 ; i < top_scores_.size(); i++) {
-        out << i + 1 << ". " << top_scores_[i] << endl;
-    }
-    string score_message = out.str();
-    ofSetColor(0, 0, 0);
-    ofDrawBitmapString(score_message, ofGetWindowWidth() / 2, ofGetWindowHeight() / 2);
-};
+void ofApp::MovePipes() {
+    top_pipe_.body.setX(top_pipe_.body.getX() - SpeedCalculator(score_));
+    bottom_pipe_.body.setX(top_pipe_.body.getX() - SpeedCalculator(score_));
+}

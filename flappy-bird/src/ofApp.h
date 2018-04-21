@@ -6,22 +6,31 @@
 
 // Enum to represent the current state of the game
 enum GameState {
-    IN_PROGRESS = 0,
+    START,
+    FALLING,
+    JUMP,
     PAUSED,
     FINISHED
 };
 
 class ofApp : public ofBaseApp{
 private:
-     //Current state of game
-    GameState current_state_ = IN_PROGRESS;
+    GameState current_state_ = START;
+    
+    ofImage background_image_;
+    ofImage bird_falling_image_;
+    ofImage bird_jumping_image_;
+    ofImage pipe_down_image_;
+    ofImage pipe_up_image_;
+    ofImage name_image_;
+    ofImage start_button_image_;
     
     //actual bird
     Bird bird_ = Bird(ofRectangle(50,200,20,20));
     
     //pipe the bird has to jump through, still needs to be implemented
-    Pipe pipe_one_ = Pipe(ofRectangle(500,0,50,200));
-    Pipe pipe_two_ = Pipe(ofRectangle(500,280,50,300));
+    Pipe top_pipe_ = Pipe(ofRectangle(0,0,0,0));
+    Pipe bottom_pipe_ = Pipe(ofRectangle(0,0,0,0));
 
     //Vector for top 10 scores
     std::vector<unsigned> top_scores_ = vector<unsigned>(10);
@@ -34,10 +43,12 @@ private:
 
      @param score score to add
      */
-    void UpdateTopScores(int score);
+    void UpdateTopScores(unsigned);
     
-    // A flag boolean used in the update() function
-    bool should_update_ = true;
+    /**
+     Function to render start screen
+     */
+    void DrawStart();
     
     /**
      Function to render bird on screen
@@ -45,12 +56,12 @@ private:
     void DrawBird();
     
     /**
-     Function to render pipe on screen
+     Function to render pipes on screen
      */
     void DrawPipes();
     
     /**
-     Function to render game over screen
+     Function to render game over screen with top scores
      */
     void DrawGameOver();
     
@@ -84,10 +95,11 @@ private:
      */
     double SpeedCalculator(double);
     
+    
     /**
-     Method to render top scores on screen
+     Method to move pipes
      */
-    void DrawTopScores();
+    void MovePipes();
     
 public:
     void setup();
