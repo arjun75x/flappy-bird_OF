@@ -7,12 +7,13 @@ void ofApp::setup(){
     ofSetWindowPosition(0, 0);
 };
 
+
 void ofApp::update(){
     if (should_update_) {
         if (current_state_ == IN_PROGRESS) {
-            pipe_one_.body.setX(pipe_one_.body.getX() - (score_ + 1));
-            pipe_two_.body.setX(pipe_one_.body.getX() - (score_ + 1));
-            bird_.body.setY(bird_.body.getY() + 1);
+            pipe_one_.body.setX(pipe_one_.body.getX() - SpeedCalculator(score_));
+            pipe_two_.body.setX(pipe_one_.body.getX() - SpeedCalculator(score_));
+            bird_.body.setY(bird_.body.getY() + 2);
             if (Intersect(bird_, pipe_one_) || Intersect(bird_, pipe_two_)) {
                 current_state_ = FINISHED;
             }
@@ -48,10 +49,8 @@ void ofApp::keyPressed(int key){
     }
     else if (current_state_ == IN_PROGRESS) {
         if (upper_key == 'B') {
-            bird_.body.setY(bird_.body.getY() - 15);
+            bird_.body.setY(bird_.body.getY() - 25);
             DrawBird();
-            update();
-            should_update_ = false;
         }
     }
     else if (upper_key == 'R' && current_state_ == FINISHED) {
@@ -109,7 +108,19 @@ bool ofApp::OutOfBounds() {
 
 void ofApp::GeneratePipes() {
     score_++;
-    int random = ofRandom(0, 500);
+    int random = ofRandom(100, 250);
     pipe_one_ = Pipe(ofRectangle(500,0,50,random));
-    pipe_two_ = Pipe(ofRectangle(500,500 - random + 100,50,500 - random));
+    pipe_two_ = Pipe(ofRectangle(500,500 - random + 40,50,500 - random));
+}
+
+double ofApp::SpeedCalculator(double score_) {
+    if (score_ == 0) {
+        return .9;
+    } else if (score_ == 1) {
+        return 1.0;
+    } else if (score_ > 7){
+        return SpeedCalculator(6) + SpeedCalculator(5) * .7;
+    } else {
+        return SpeedCalculator(score_ - 2) + SpeedCalculator(score_ - 1) * .7;
+    }
 }

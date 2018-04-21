@@ -79,6 +79,8 @@ private:
      */
     void GeneratePipes();
     
+    double SpeedCalculator(double);
+    
 public:
     void setup();
     void update();

@@ -8,7 +8,7 @@ int main( ){
 	// this kicks off the running of my app
 	// can be OF_WINDOW or OF_FULLSCREEN
 	// pass in width and height too:
-    ofSetFrameRate(240);
+    ofSetFrameRate(1000);
     
 	ofRunApp(new ofApp());
 
