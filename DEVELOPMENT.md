@@ -1,0 +1,5 @@
+# Development
+
+Week 1:
+
+This week I worked on implementing the game using just the OpenFrameworks Library. So far the game looks alright, but all the graphics are using OpenFrameworks objects, so they are basically just rectangles for the birds and pipes as of now, which is fine. All the functionality of the game works though, with a score, a bird that is falling, the bird jumps with the click of the button B, and the game successfully generates a random series of pipes that the bird has to jump through. That's basically all there is to the game, so next week I can focus on just implementing the graphics of the game, hopefully using the GamePlay library or this new library I've been looking at, OfDatGui. Whatever works for implementing graphics I'll go with, and by the end of next week the game should basically be the finished product. I'm hoping the last week I can save for adding experimental features and using the GamePlay library to port the game to other platforms such as iOS, but considering the way OpenFrameworks projects are laid out I think using the GamePlay library might be hard, but I'll see.

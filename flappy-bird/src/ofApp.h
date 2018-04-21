@@ -79,7 +79,15 @@ private:
      */
     void GeneratePipes();
     
+    /**
+     Method to calculate speed of game based on score
+     */
     double SpeedCalculator(double);
+    
+    /**
+     Method to render top scores on screen
+     */
+    void DrawTopScores();
     
 public:
     void setup();

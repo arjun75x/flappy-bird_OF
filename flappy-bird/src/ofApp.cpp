@@ -15,6 +15,7 @@ void ofApp::update(){
             pipe_two_.body.setX(pipe_one_.body.getX() - SpeedCalculator(score_));
             bird_.body.setY(bird_.body.getY() + 2);
             if (Intersect(bird_, pipe_one_) || Intersect(bird_, pipe_two_)) {
+                UpdateTopScores(score_);
                 current_state_ = FINISHED;
             }
             if (OutOfBounds()) {
@@ -31,6 +32,7 @@ void ofApp::draw(){
         DrawGamePaused();
     }
     else if(current_state_ == FINISHED) {
+        DrawTopScores();
         DrawGameOver();
     }
     DrawBird();
@@ -58,17 +60,6 @@ void ofApp::keyPressed(int key){
     }
 };
 
-void ofApp::UpdateTopScores(int score) {
-    for (int i = 0; i < top_scores_.size(); i++) {
-        if (score > top_scores_[i]) {
-            int temp = top_scores_[i];
-            top_scores_[i] = score;
-            UpdateTopScores(temp);
-            break;
-        }
-    }
-};
-
 void ofApp::DrawBird() {
     ofDrawRectangle(bird_.body);
 };
@@ -82,7 +73,7 @@ void ofApp::DrawGameOver() {
     string score_string = std::to_string(score_);
     string lose_message = "You Lost! Final Score: " + score_string;
     ofSetColor(0, 0, 0);
-    ofDrawBitmapString(lose_message, ofGetWindowWidth() / 2, ofGetWindowHeight() / 2);
+    ofDrawBitmapString(lose_message, ofGetWindowWidth() / 2, ofGetWindowHeight() / 2 - 200);
 };
 
 void ofApp::DrawGamePaused() {
@@ -111,7 +102,7 @@ void ofApp::GeneratePipes() {
     int random = ofRandom(100, 250);
     pipe_one_ = Pipe(ofRectangle(500,0,50,random));
     pipe_two_ = Pipe(ofRectangle(500,500 - random + 40,50,500 - random));
-}
+};
 
 double ofApp::SpeedCalculator(double score_) {
     if (score_ == 0) {
@@ -123,4 +114,26 @@ double ofApp::SpeedCalculator(double score_) {
     } else {
         return SpeedCalculator(score_ - 2) + SpeedCalculator(score_ - 1) * .7;
     }
-}
+};
+
+void ofApp::UpdateTopScores(int score) {
+    for (int i = 0; i < top_scores_.size(); i++) {
+        if (score > top_scores_[i]) {
+            int temp = top_scores_[i];
+            top_scores_[i] = score;
+            UpdateTopScores(temp);
+            break;
+        }
+    }
+};
+
+void ofApp::DrawTopScores() {
+    stringstream out;
+    out << "Top Scores: " << endl;
+    for (int i = 0 ; i < top_scores_.size(); i++) {
+        out << i + 1 << ". " << top_scores_[i] << endl;
+    }
+    string score_message = out.str();
+    ofSetColor(0, 0, 0);
+    ofDrawBitmapString(score_message, ofGetWindowWidth() / 2, ofGetWindowHeight() / 2);
+};
