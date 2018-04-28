@@ -1,6 +1,7 @@
 #include "ofApp.h"
 const unsigned kWidth = 288;
 const unsigned kHeight = 512;
+unsigned kJumpCount = 0;
 
 void ofApp::setup(){
     ofSetWindowTitle("Flappy Bird");
@@ -18,18 +19,29 @@ void ofApp::setup(){
 void ofApp::update(){
     if (current_state_ == FALLING) {
         MovePipes();
-        bird_.body.setY(bird_.body.getY() + 2);
+        bird_.body.setY(bird_.body.getY() + 2 + bird_.body.getY()*.005);
         if (Intersect(bird_, top_pipe_) || Intersect(bird_, bottom_pipe_)) {
-            UpdateTopScores(score_);
+            UpdateTopScores(score_ - 1);
             current_state_ = FINISHED;
         }
-        if (OutOfBounds()) {
+        if (top_pipe_.body.getMinX() < 0) {
             GeneratePipes();
         }
     } else if (current_state_ == JUMP) {
-        bird_.body.setY(bird_.body.getY() - 25);
         MovePipes();
-        current_state_ = FALLING;
+        bird_.body.setY(bird_.body.getY() - 5);
+        kJumpCount++;
+        if (kJumpCount == 10) {
+            current_state_ = FALLING;
+            kJumpCount = 0;
+        }
+        if (Intersect(bird_, top_pipe_) || Intersect(bird_, bottom_pipe_)) {
+            UpdateTopScores(score_ - 1);
+            current_state_ = FINISHED;
+        }
+        if (top_pipe_.body.getMinX() < 0) {
+            GeneratePipes();
+        }
     }
 }
 
@@ -41,7 +53,7 @@ void ofApp::draw(){
     } else if (current_state_ == PAUSED) {
         DrawGamePaused();
     } else if (current_state_ == JUMP) {
-        bird_jumping_image_.draw(bird_.body);
+        DrawBird();
         DrawPipes();
     } else if (current_state_ == FALLING) {
         DrawBird();
@@ -61,7 +73,7 @@ void ofApp::keyPressed(int key){
     if (upper_key == 'P' && current_state_ != FINISHED) {
         current_state_ = (current_state_ == FALLING) ? PAUSED : FALLING;
     } else if (current_state_ == FALLING) {
-        if (upper_key == 'B') {
+        if (upper_key == ' ') {
             current_state_ = JUMP;
         }
     } else if (current_state_ == START) {
@@ -131,13 +143,13 @@ void ofApp::GeneratePipes() {
 
 double ofApp::SpeedCalculator(double score_) {
     if (score_ == 0) {
-        return .9;
+        return 1.2;
     } else if (score_ == 1) {
-        return 1.0;
+        return 1.5;
     } else if (score_ > 7){
-        return SpeedCalculator(6) + SpeedCalculator(5) * .6;
+        return SpeedCalculator(6) + SpeedCalculator(5) * .4;
     } else {
-        return SpeedCalculator(score_ - 2) + SpeedCalculator(score_ - 1) * .6;
+        return SpeedCalculator(score_ - 2) + SpeedCalculator(score_ - 1) * .4;
     }
 }
 
