@@ -5,3 +5,8 @@ My idea for the final project would be a fork of the game Flappy Bird for iOS. I
 If you are not familiar with the game Flappy Bird, I will provide a basic overview here. The user opens the app onto a start screen with the title of the game and two buttons, one to play the game and one for help. The help button would lead to the help screen which would outline how to play the app, which consists of just touching the screen to jump, and that's it. The duration of the tap affects the height the bird jumps, but that's all there is to the game.  The play button would direct the user to the game, and basically the game would randomly generate pipes from the ceiling and floor of various heights and the user would need to jump up and down to navigate through the pipes. The game would keep track of each pipe the user goes through and increment the score by 1. In the end I would hope to keep track of the top 10 scores much like we did in ofSnake. Attached is a picture of the app below:
 
 ![Gif of Flappy Bird](https://media.giphy.com/media/euuaA2cwLEUuI/giphy.gif)
+
+
+Update to proposal 4/27:
+
+So integrating GamePlay and OpenFrameworks is a bit more difficult than I anticipated, as OpenFrameworks projects are basically a proprietary type of project that makes them hard to work with another type of game library, such as GamePlay. Because of this, I want to use ofImage and ofSoundPlayer as my external libraries, as they make loading images and sound into the game a lot simpler.

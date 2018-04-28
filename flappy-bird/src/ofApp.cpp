@@ -47,7 +47,9 @@ void ofApp::update(){
 
 //add score to top right corner
 void ofApp::draw(){
-    background_image_.draw(0, 0, kWidth, kHeight);
+    if (current_state_ != FINISHED) {
+        background_image_.draw(0, 0, kWidth, kHeight);
+    }
     if (current_state_ == START) {
         DrawStart();
     } else if (current_state_ == PAUSED) {
@@ -95,9 +97,9 @@ void ofApp::DrawPipes() {
 }
 
 void ofApp::DrawGameOver() {
+    string restart = "Press R to restart!";
     string score_string = std::to_string(score_ - 1);
     string message = "You Lost! Final Score: " + score_string;
-    
     stringstream out;
     out << endl;
     out << "Top Scores: " << endl;
@@ -105,18 +107,22 @@ void ofApp::DrawGameOver() {
         out << i + 1 << ". " << top_scores_[i] << endl;
     }
     message += out.str();
-    ofDrawBitmapString(message, kWidth/2 - 80, kHeight/2);
+    ofDrawBitmapString(restart, kWidth/2 - 70, kHeight/2 + 70);
+    ofDrawBitmapString(message, kWidth/2 - 90, kHeight/2 - 100);
 }
 
 void ofApp::DrawStart() {
     name_image_.draw(kWidth/2 - name_image_.getWidth()/2, kHeight/2 - 50);
     start_button_image_.draw(kWidth/2 - start_button_image_.getWidth()/2, kHeight/2 + 50);
+    ofDrawBitmapString("Instructions:", kWidth/2 - start_button_image_.getWidth()/2 - 5, kHeight/2 + 150);
+    ofDrawBitmapString("Press the space bar to jump", kWidth/2 - start_button_image_.getWidth()/2 - 50, kHeight/2 + 170);
+    ofDrawBitmapString("Press P pause the game!", kWidth/2 - start_button_image_.getWidth()/2 - 50, kHeight/2 + 190);
+    ofDrawBitmapString("Press V to start the game!", kWidth/2 - start_button_image_.getWidth()/2 - 50, kHeight/2 + 210);
 }
 
 void ofApp::DrawGamePaused() {
     string pause_message = "P to Unpause!";
-    ofSetColor(0, 0, 0);
-    ofDrawBitmapString(pause_message, ofGetWindowWidth() / 2, ofGetWindowHeight() / 2);
+    ofDrawBitmapString(pause_message, start_button_image_.getWidth()/2 + 35, kHeight/2 - 40);
 }
 
 void ofApp::Reset() {
