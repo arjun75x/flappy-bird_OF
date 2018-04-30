@@ -27,11 +27,12 @@ void ofApp::setup(){
 void ofApp::update(){
     if (current_state_ == FALLING) {
         MovePipes();
-        bird_.body.setY(bird_.body.getY() + 2 + bird_.body.getY()*.005);
+        bird_.body.setY(bird_.body.getY() + 2 + (bird_.body.getY() * .007));
+        
         if (Intersect(bird_, top_pipe_) || Intersect(bird_, bottom_pipe_)) {
+            intersect_sound_.play();
             UpdateTopScores(score_ - 1);
             current_state_ = FINISHED;
-            intersect_sound_.play();
         }
         if (top_pipe_.body.getMinX() < 0) {
             GeneratePipes();
@@ -41,10 +42,11 @@ void ofApp::update(){
         bird_.body.setY(bird_.body.getY() - 5);
         jump_count++;
         if (jump_count == 10) {
+            jump_sound_.play();
             current_state_ = FALLING;
             jump_count = 0;
         }
-        jump_sound_.play();
+        
         if (Intersect(bird_, top_pipe_) || Intersect(bird_, bottom_pipe_)) {
             UpdateTopScores(score_ - 1);
             current_state_ = FINISHED;
@@ -76,8 +78,8 @@ void ofApp::keyPressed(int key){
         ofToggleFullscreen();
         return;
     }
-    int upper_key = toupper(key);
     
+    int upper_key = toupper(key);
     if (upper_key == 'P' && current_state_ != FINISHED) {
         current_state_ = (current_state_ == FALLING) ? PAUSED : FALLING;
     } else if (current_state_ == FALLING) {
@@ -104,7 +106,6 @@ void ofApp::DrawPipes() {
 
 //Some code adapted from of_snake application
 void ofApp::DrawGameOver() {
-    string restart = "Press R to restart!";
     string score_string = std::to_string(score_ - 1);
     string message = "You Lost! Final Score: " + score_string;
     stringstream out;
@@ -114,8 +115,10 @@ void ofApp::DrawGameOver() {
         out << i + 1 << ". " << top_scores_[i] << endl;
     }
     message += out.str();
-    ofDrawBitmapString(restart, kWidth/2 - 70, kHeight/2 + 40);
     ofDrawBitmapString(message, kWidth/2 - 90, kHeight/2 - 150);
+    
+    string restart = "Press R to restart!";
+    ofDrawBitmapString(restart, kWidth/2 - 70, kHeight/2 + 40);
 }
 
 void ofApp::DrawStart() {
@@ -154,16 +157,9 @@ void ofApp::GeneratePipes() {
     bottom_pipe_ = Pipe(ofRectangle(kWidth,kHeight - random + 50,50,kHeight - random));
 }
 
-double ofApp::SpeedCalculator(double score_) {
-    if (score_ == 0) {
-        return 1.2;
-    } else if (score_ == 1) {
-        return 1.5;
-    } else if (score_ > 7){
-        return SpeedCalculator(6) + SpeedCalculator(5) * .4;
-    } else {
-        return SpeedCalculator(score_ - 2) + SpeedCalculator(score_ - 1) * .4;
-    }
+void ofApp::MovePipes() {
+    top_pipe_.body.setX(top_pipe_.body.getX() - SpeedCalculator(score_));
+    bottom_pipe_.body.setX(top_pipe_.body.getX() - SpeedCalculator(score_));
 }
 
 void ofApp::UpdateTopScores(unsigned score) {
@@ -175,9 +171,4 @@ void ofApp::UpdateTopScores(unsigned score) {
             break;
         }
     }
-}
-
-void ofApp::MovePipes() {
-    top_pipe_.body.setX(top_pipe_.body.getX() - SpeedCalculator(score_));
-    bottom_pipe_.body.setX(top_pipe_.body.getX() - SpeedCalculator(score_));
 }

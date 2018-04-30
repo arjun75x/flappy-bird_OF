@@ -9,14 +9,13 @@
 
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
-#include "ofApp.h"
+#include "util.hpp"
 
-TEST_CASE("Speed Calculator Tests") {
-    ofApp *test = new ofApp();
+TEST_CASE("Speed Calculator Test") {
     SECTION("Base Speed Test") {
-        REQUIRE(test->SpeedCalculator(1) == 1.5);
+        REQUIRE(SpeedCalculator(1) == 1.5);
     }
     SECTION("Max Speed Test") {
-        REQUIRE(test->SpeedCalculator(10) == test->SpeedCalculator(7));
+        REQUIRE(SpeedCalculator(100) == Approx(6.500064));
     }
 }

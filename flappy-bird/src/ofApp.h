@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "bird.hpp"
 #include "pipe.hpp"
+#include "util.hpp"
 
 // Enum to represent the current state of the game
 enum GameState {
@@ -87,16 +88,10 @@ private:
      */
     void MovePipes();
     
-public:
-    void setup();
-    void update();
-    void draw();
-    void keyPressed(int key);
-    
     /**
-     Method to calculate speed of game based on score
+     Function to check if a bird and pipe intersect
      */
-    double SpeedCalculator(double score);
+    bool Intersect(Bird, Pipe);
     
     /**
      Function to check if pipe is out of bounds
@@ -104,12 +99,13 @@ public:
     bool OutOfBounds();
     
     /**
-     Function to check if a bird and pipe intersect
-     */
-    bool Intersect(Bird, Pipe);
-    
-    /**
      Function to update top score vector
      */
     void UpdateTopScores(unsigned score);
+    
+public:
+    void setup();
+    void update();
+    void draw();
+    void keyPressed(int key);
 };
