@@ -1,19 +1,27 @@
 #include "ofApp.h"
+
+//constants
 const unsigned kWidth = 288;
 const unsigned kHeight = 512;
-unsigned kJumpCount = 0;
 
 void ofApp::setup(){
+    //Setup window
     ofSetWindowTitle("Flappy Bird");
     srand(static_cast<unsigned>(time(0))); // Seed random with current time
     ofSetWindowShape(kWidth, kHeight);
+    
+    //Load images
     background_image_.load("graphics/background.png");
     bird_falling_image_.load("graphics/bird_falling.png");
-    bird_jumping_image_.load("graphics.bird_jumping.png");
+    bird_jumping_image_.load("graphics/bird_jumping.png");
     pipe_down_image_.load("graphics/pipe_down.png");
     pipe_up_image_.load("graphics/pipe_up.png");
     start_button_image_.load("graphics/start.png");
     name_image_.load("graphics/name.png");
+    
+    //Load sounds
+    jump_sound_.load("sounds/sfx_wing.wav");
+    intersect_sound_.load("sounds/sfx_hit.wav");
 }
 
 void ofApp::update(){
@@ -23,6 +31,7 @@ void ofApp::update(){
         if (Intersect(bird_, top_pipe_) || Intersect(bird_, bottom_pipe_)) {
             UpdateTopScores(score_ - 1);
             current_state_ = FINISHED;
+            intersect_sound_.play();
         }
         if (top_pipe_.body.getMinX() < 0) {
             GeneratePipes();
@@ -30,14 +39,16 @@ void ofApp::update(){
     } else if (current_state_ == JUMP) {
         MovePipes();
         bird_.body.setY(bird_.body.getY() - 5);
-        kJumpCount++;
-        if (kJumpCount == 10) {
+        jump_count++;
+        if (jump_count == 10) {
             current_state_ = FALLING;
-            kJumpCount = 0;
+            jump_count = 0;
         }
+        jump_sound_.play();
         if (Intersect(bird_, top_pipe_) || Intersect(bird_, bottom_pipe_)) {
             UpdateTopScores(score_ - 1);
             current_state_ = FINISHED;
+            intersect_sound_.play();
         }
         if (top_pipe_.body.getMinX() < 0) {
             GeneratePipes();
@@ -45,19 +56,13 @@ void ofApp::update(){
     }
 }
 
-//add score to top right corner
 void ofApp::draw(){
-    if (current_state_ != FINISHED) {
-        background_image_.draw(0, 0, kWidth, kHeight);
-    }
+    background_image_.draw(0, 0, kWidth, kHeight);
     if (current_state_ == START) {
         DrawStart();
     } else if (current_state_ == PAUSED) {
         DrawGamePaused();
-    } else if (current_state_ == JUMP) {
-        DrawBird();
-        DrawPipes();
-    } else if (current_state_ == FALLING) {
+    } else if (current_state_ == JUMP || current_state_ == FALLING) {
         DrawBird();
         DrawPipes();
     } else if (current_state_ == FINISHED) {
@@ -65,6 +70,7 @@ void ofApp::draw(){
     }
 }
 
+//Some code adapted from of_snake application
 void ofApp::keyPressed(int key){
     if (key == OF_KEY_F12) {
         ofToggleFullscreen();
@@ -96,6 +102,7 @@ void ofApp::DrawPipes() {
     pipe_up_image_.draw(bottom_pipe_.body);
 }
 
+//Some code adapted from of_snake application
 void ofApp::DrawGameOver() {
     string restart = "Press R to restart!";
     string score_string = std::to_string(score_ - 1);
@@ -107,8 +114,8 @@ void ofApp::DrawGameOver() {
         out << i + 1 << ". " << top_scores_[i] << endl;
     }
     message += out.str();
-    ofDrawBitmapString(restart, kWidth/2 - 70, kHeight/2 + 70);
-    ofDrawBitmapString(message, kWidth/2 - 90, kHeight/2 - 100);
+    ofDrawBitmapString(restart, kWidth/2 - 70, kHeight/2 + 40);
+    ofDrawBitmapString(message, kWidth/2 - 90, kHeight/2 - 150);
 }
 
 void ofApp::DrawStart() {

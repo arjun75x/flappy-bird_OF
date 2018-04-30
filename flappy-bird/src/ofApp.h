@@ -15,8 +15,10 @@ enum GameState {
 
 class ofApp : public ofBaseApp{
 private:
+    
     GameState current_state_ = START;
     
+    //Images for game
     ofImage background_image_;
     ofImage bird_falling_image_;
     ofImage bird_jumping_image_;
@@ -25,10 +27,14 @@ private:
     ofImage name_image_;
     ofImage start_button_image_;
     
-    //actual bird
+    //Sounds for game
+    ofSoundPlayer jump_sound_;
+    ofSoundPlayer intersect_sound_;
+    
+    //Bird of game
     Bird bird_ = Bird(ofRectangle(50,200,20,20));
     
-    //pipe the bird has to jump through, still needs to be implemented
+    //Pipes bird has to jump through
     Pipe top_pipe_ = Pipe(ofRectangle(0,0,0,0));
     Pipe bottom_pipe_ = Pipe(ofRectangle(0,0,0,0));
 
@@ -38,12 +44,8 @@ private:
     //Current score
     unsigned score_ = 0;
     
-    /**
-     Function to update top score vector
-
-     @param score score to add
-     */
-    void UpdateTopScores(unsigned);
+    //Count for jumping animations
+    unsigned jump_count = 0;
     
     /**
      Function to render start screen
@@ -76,28 +78,12 @@ private:
     void Reset();
     
     /**
-     Function to check if a bird and pipe intersect
-     */
-    bool Intersect(Bird, Pipe);
-    
-    /**
-     Function to check if pipe is out of bounds
-     */
-    bool OutOfBounds();
-    
-    /**
      Method to regenerate pipes each time
      */
     void GeneratePipes();
     
     /**
-     Method to calculate speed of game based on score
-     */
-    double SpeedCalculator(double);
-    
-    
-    /**
-     Method to move pipes
+     Method to move pipes along screen
      */
     void MovePipes();
     
@@ -106,4 +92,24 @@ public:
     void update();
     void draw();
     void keyPressed(int key);
+    
+    /**
+     Method to calculate speed of game based on score
+     */
+    double SpeedCalculator(double score);
+    
+    /**
+     Function to check if pipe is out of bounds
+     */
+    bool OutOfBounds();
+    
+    /**
+     Function to check if a bird and pipe intersect
+     */
+    bool Intersect(Bird, Pipe);
+    
+    /**
+     Function to update top score vector
+     */
+    void UpdateTopScores(unsigned score);
 };
