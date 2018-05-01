@@ -7,3 +7,8 @@ This week I worked on implementing the game using just the OpenFrameworks Librar
 Week 2:
 
 This week I worked on adding graphics to the game. I found the sprites of flappy bird online and through those I used the library ofImage to put all the images into the game. From there, I changed my draw functions to draw the pictures at the locations of the old rectangles instead of the rectangles themselves, which worked out perfectly. After that I added the proper physics to the game so the jumping was a lot less jittery, by letting the jump move for a few frames instead of just one. I added a little gravity to the game too by simply adding the y location * .005 when updating the birds location.
+
+
+Week 3:
+
+This week I added sound and testing to the game. The sound was very straightforward to add using the ofSoundPlayer library and simply calling those functions when the bird is jumping or hitting a pipe. Testing was a pain, and after an hour in office hours we found it impossible to test the inbuilt openFrameworks libraries as they create weird dependencies within Xcode. Testing with catch in Xcode was a pain too, as you have to create another target which creates more issues with the whole project. In office hours we found that to run the tests you have to comment a line of code out in the xconfig file and then uncomment it out to run the game again. Because of these limitations in Xcode, a lot of my functions couldn't be tested since they were dependedent on ofApp, but since the game works properly I know all my functions work. All in all the game is pretty fun to play, and while the physics are a little different than the actual game, I tested it with a lot of my friends and they still found it challenging and rather fun, so there's that.
