@@ -6,5 +6,6 @@ Game built using OpenFrameworks and the libraries ofRectangle, ofImage, and ofSo
 To run game:
 1. Make sure OpenFrameworks is installed
 2. Place project in apps/myApps folder of OpenFrameworks
-3. Open flappy-bird/bin/
-4. Click file flappy-bird, and the game should open in the OpenFrameworks window
+3. Open flappy-bird.xcodeproj in Xcode
+4. Make sure the target is flappy-bird Release
+5. Click run in the top left corner of Xcode and an OpenFrameworks window will pop up
