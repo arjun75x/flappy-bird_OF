@@ -1,5 +1,5 @@
-# CS 126 FinalProject
-Flappy Bird:
+# flappy-bird_OF
+Flappy Bird game implemented through Open Frameworks in C++
 
 Game built using OpenFrameworks and the libraries ofRectangle, ofImage, and ofSoundPlayer in C++
 
